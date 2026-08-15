@@ -16,6 +16,11 @@ namespace AppWebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]   
+#if !DEBUG    
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+       Policy = null, Roles = "dbo")]
+#endif
+
     public class AdminController : Controller
     {
         readonly ILogger<AdminController> _logger;
@@ -29,7 +34,6 @@ namespace AppWebApi.Controllers
         readonly DatabaseConnections _dbConnections = null;
         readonly IAdminService _service;
 
-        
         //GET: api/admin/environment
         [HttpGet()]
         [ActionName("Environment")]
@@ -168,7 +172,8 @@ namespace AppWebApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-                //GET: api/admin/log
+
+        //GET: api/admin/log
         [HttpGet()]
         [ActionName("Log")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<LogMessage>))]
@@ -180,6 +185,29 @@ namespace AppWebApi.Controllers
                 return Ok(await cl.MessagesAsync);
             }
             return Ok("No messages in log");
+        }
+        
+        [HttpGet()]
+        [ActionName("SeedUsers")]
+        [ProducesResponseType(200, Type = typeof(UsrInfoDto))]
+        [ProducesResponseType(400, Type = typeof(string))]
+        public async Task<IActionResult> SeedUsers(string countUsr = "32", string countSupUsr = "2", string countDbOwners = "1")
+        {
+            try
+            {
+                int _countUsr = int.Parse(countUsr);
+                int _countSupUsr = int.Parse(countSupUsr);
+                int _countDbOwners = int.Parse(countDbOwners);
+
+                _logger.LogInformation($"{nameof(SeedUsers)}: {nameof(_countUsr)}: {_countUsr}, {nameof(_countSupUsr)}: {_countSupUsr}, {nameof(_countDbOwners)}: {_countDbOwners}");
+
+                var _info = await _service.SeedUsersAsync(_countUsr, _countSupUsr, _countDbOwners);
+                return Ok(_info);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         public AdminController(ILogger<AdminController> logger,
@@ -205,7 +233,6 @@ namespace AppWebApi.Controllers
             _dbConnections = dbConnections;
 
             _service = service;
-
         }
     }
 }

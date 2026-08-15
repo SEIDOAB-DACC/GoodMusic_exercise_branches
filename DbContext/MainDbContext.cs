@@ -25,6 +25,7 @@ public class MainDbContext : Microsoft.EntityFrameworkCore.DbContext
     #region C# model of database tables
     public DbSet<MusicGroupDbM> MusicGroups { get; set; }
     public DbSet<AlbumDbM> Albums { get; set; }
+    public DbSet<UserDbM> Users { get; set; }
     #endregion
 
     #region constructors

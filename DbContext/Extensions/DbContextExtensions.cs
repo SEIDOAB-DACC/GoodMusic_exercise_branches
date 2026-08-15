@@ -11,12 +11,29 @@ public static class DbContextExtensions
 {
     public static IServiceCollection AddUserBasedDbContext(this IServiceCollection serviceCollection)
     {
+        serviceCollection.AddHttpContextAccessor();
         serviceCollection.AddDbContext<MainDbContext>((serviceProvider, options) => 
         { 
             var configuration = serviceProvider.GetRequiredService<IConfiguration>(); 
             var databaseConnections = serviceProvider.GetRequiredService<DatabaseConnections>(); 
             
-            var userRole = configuration["DatabaseConnections:DefaultDataUser"];                      
+            var userRole = configuration["DatabaseConnections:DefaultDataUser"];
+            
+            //using jwt find out the user role requesting the endpoint
+            var jwtEncryptions = serviceProvider.GetRequiredService<JwtEncryptions>(); 
+            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>(); 
+
+            var httpContext = httpContextAccessor.HttpContext; 
+            if (httpContext != null) 
+            { 
+                var token = httpContext.GetTokenAsync("access_token").Result;
+                if (token != null)
+                {
+                    var claims = jwtEncryptions.GetClaimsFromToken(token);
+                    userRole = claims["UserRole"];
+                }
+            } 
+            
             var conn = databaseConnections.GetDataConnectionDetails(userRole);
             if (databaseConnections.SetupInfo.DataConnectionServer == DatabaseServer.SQLServer)
             {

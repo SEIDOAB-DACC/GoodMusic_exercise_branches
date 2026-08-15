@@ -14,6 +14,9 @@ namespace DbContext.Migrations.SqlServerDbContext
             migrationBuilder.EnsureSchema(
                 name: "supusr");
 
+            migrationBuilder.EnsureSchema(
+                name: "dbo");
+
             migrationBuilder.CreateTable(
                 name: "MusicGroups",
                 schema: "supusr",
@@ -27,6 +30,22 @@ namespace DbContext.Migrations.SqlServerDbContext
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MusicGroups", x => x.MusicGroupId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                schema: "dbo",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserName = table.Column<string>(type: "varchar(200)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "varchar(200)", nullable: false),
+                    UserRole = table.Column<string>(type: "varchar(200)", nullable: false),
+                    Email = table.Column<string>(type: "varchar(200)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -64,6 +83,10 @@ namespace DbContext.Migrations.SqlServerDbContext
             migrationBuilder.DropTable(
                 name: "Albums",
                 schema: "supusr");
+
+            migrationBuilder.DropTable(
+                name: "Users",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "MusicGroups",

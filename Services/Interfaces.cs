@@ -8,6 +8,7 @@ public interface IAdminService
     public Task SeedAsync(int seedCount);
     public Task<ResponseItemDto<GstUsrInfoAllDto>> RemoveSeedAsync(bool seeded);
     public Task<ResponseItemDto<GstUsrInfoAllDto>> GuestInfoAsync();
+    public Task<ResponseItemDto<UsrInfoDto>> SeedUsersAsync(int nrOfUsers, int nrOfSuperUsers, int nrOfSysAdmin);
 }
 public interface IMusicGroupsService
 {
@@ -25,4 +26,9 @@ public interface IAlbumsService
     public Task<ResponseItemDto<IAlbum>> DeleteAlbumAsync(Guid id);
     public Task<ResponseItemDto<IAlbum>> UpdateAlbumAsync(AlbumCUdto item);
     public Task<ResponseItemDto<IAlbum>> CreateAlbumAsync(AlbumCUdto item);
+}
+
+public interface ILoginService
+{
+    public Task<ResponseItemDto<LoginUserSessionDto>> LoginUserAsync(LoginCredentialsDto usrCreds);
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 
 using Models.Interfaces;
 using Models.DTO;
@@ -11,6 +12,9 @@ namespace AppWebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+        Policy = null, Roles = "usr, supusr, dbo")]
+
     public class AlbumsController : Controller
     {
         readonly IAlbumsService _service;
@@ -75,6 +79,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpDelete("{id}")]
         [ActionName("DeleteItem")]
         [ProducesResponseType(200, Type = typeof(ResponseItemDto<IAlbum>))]
@@ -100,6 +106,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpGet()]
         [ActionName("ReadItemDto")]
         [ProducesResponseType(200, Type = typeof(AlbumCUdto))]
@@ -132,6 +140,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpPut("{id}")]
         [ActionName("UpdateItem")]
         [ProducesResponseType(200, Type = typeof(ResponseItemDto<IAlbum>))]
@@ -157,6 +167,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpPost()]
         [ActionName("CreateItem")]
         [ProducesResponseType(200, Type = typeof(ResponseItemDto<IAlbum>))]

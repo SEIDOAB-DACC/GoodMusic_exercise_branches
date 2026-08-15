@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 using Models.Interfaces;
 using Models.DTO;
@@ -11,6 +12,8 @@ namespace AppWebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+        Policy = null, Roles = "usr, supusr, dbo")]
     public class MusicGroupsController : Controller
     {
         readonly IMusicGroupsService _service = null;
@@ -75,6 +78,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpDelete("{id}")]
         [ActionName("DeleteItem")]
         [ProducesResponseType(200, Type = typeof(ResponseItemDto<IMusicGroup>))]
@@ -100,6 +105,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpGet()]
         [ActionName("ReadItemDto")]
         [ProducesResponseType(200, Type = typeof(MusicGroupCUdto))]
@@ -131,6 +138,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpPut("{id}")]
         [ActionName("UpdateItem")]
         [ProducesResponseType(200, Type = typeof(ResponseItemDto<IMusicGroup>))]
@@ -156,6 +165,8 @@ namespace AppWebApi.Controllers
             }
         }
 
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+            Policy = null, Roles = "supusr, dbo")]
         [HttpPost()]
         [ActionName("CreateItem")]
         [ProducesResponseType(200, Type = typeof(ResponseItemDto<IMusicGroup>))]

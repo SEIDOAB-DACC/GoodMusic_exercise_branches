@@ -100,6 +100,70 @@ public class AdminDbRepos
             Item = info
         };
     }
+    
+    public async Task<ResponseItemDto<UsrInfoDto>> SeedUsersAsync(int nrOfUsers, int nrOfSuperUsers, int nrOfDbOwners)
+    {
+        _logger.LogInformation($"Seeding {nrOfUsers} users and {nrOfSuperUsers} superusers");
+        
+        //First delete all existing users
+        foreach (var u in _dbContext.Users)
+            _dbContext.Users.Remove(u);
+
+        //add users
+        for (int i = 1; i <= nrOfUsers; i++)
+        {
+            _dbContext.Users.Add(new UserDbM
+            {
+                UserId = Guid.NewGuid(),
+                UserName = $"user{i}",
+                Email = $"user{i}@gmail.com",
+                PasswordHash = _encryptions.EncryptPasswordToBase64($"user{i}"),
+                UserRole = "usr"
+            });
+        }
+
+        //add super user
+        for (int i = 1; i <= nrOfSuperUsers; i++)
+        {
+            _dbContext.Users.Add(new UserDbM
+            {
+                UserId = Guid.NewGuid(),
+                UserName = $"superuser{i}",
+                Email = $"superuser{i}@gmail.com",
+                PasswordHash = _encryptions.EncryptPasswordToBase64($"superuser{i}"),
+                UserRole = "supusr"
+            });
+        }
+
+        //add system adminitrators
+        for (int i = 1; i <= nrOfDbOwners; i++)
+        {
+            _dbContext.Users.Add(new UserDbM
+            {
+                UserId = Guid.NewGuid(),
+                UserName = $"dbo{i}",
+                Email = $"dbo{i}@gmail.com",
+                PasswordHash = _encryptions.EncryptPasswordToBase64($"dbo{i}"),
+                UserRole = "dbo"
+            });
+        }
+        await _dbContext.SaveChangesAsync();
+
+        var _info = new UsrInfoDto
+        {
+            NrUsers = await _dbContext.Users.CountAsync(i => i.UserRole == "usr"),
+            NrSuperUsers = await _dbContext.Users.CountAsync(i => i.UserRole == "supusr"),
+            NrDbOwners = await _dbContext.Users.CountAsync(i => i.UserRole == "dbo")
+        };
+
+        return new ResponseItemDto<UsrInfoDto>()
+        {
+#if DEBUG
+            ConnectionString = _dbContext.dbConnection,
+#endif
+            Item = _info
+        };
+    }
 
     public AdminDbRepos(ILogger<AdminDbRepos> logger, Encryptions encryptions, MainDbContext context)
     {

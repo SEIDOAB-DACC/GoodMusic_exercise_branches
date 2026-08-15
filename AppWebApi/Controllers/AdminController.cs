@@ -8,6 +8,7 @@ using Configuration;
 using Configuration.Options;
 
 using Microsoft.Extensions.Options;
+using Models.DTO;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -146,7 +147,28 @@ namespace AppWebApi.Controllers
             }
         }
 
-        //GET: api/admin/log
+        //GET: api/admin/removeseed
+        [HttpGet()]
+        [ActionName("RemoveSeed")]
+        [ProducesResponseType(200, Type = typeof(GstUsrInfoAllDto))]
+        [ProducesResponseType(400, Type = typeof(string))]
+        public async Task<IActionResult> RemoveSeed(string seeded = "true")
+        {
+            try
+            {
+                bool seededArg = bool.Parse(seeded);
+
+                _logger.LogInformation($"{nameof(RemoveSeed)}: {nameof(seededArg)}: {seededArg}");
+                var info = await _service.RemoveSeedAsync(seededArg);
+                return Ok(info);        
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(RemoveSeed)}: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+                //GET: api/admin/log
         [HttpGet()]
         [ActionName("Log")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<LogMessage>))]
@@ -183,6 +205,7 @@ namespace AppWebApi.Controllers
             _dbConnections = dbConnections;
 
             _service = service;
+
         }
     }
 }

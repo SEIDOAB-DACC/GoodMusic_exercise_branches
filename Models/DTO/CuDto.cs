@@ -20,7 +20,6 @@ public class MusicGroupCUdto
     public MusicGenre Genre { get; set; }
 
     public List<Guid> AlbumsId { get; set; } = new List<Guid>();
-    public List<Guid> ArtistsId { get; set; } = new List<Guid>();
 
     public MusicGroupCUdto() { }
     public MusicGroupCUdto(IMusicGroup model)
@@ -30,6 +29,16 @@ public class MusicGroupCUdto
         this.Name = model.Name;
 
         this.AlbumsId = model.Albums.Select(a => a.AlbumId).ToList();
+    }
+    public void EnsureValidity()
+    {
+        // RegEx check to ensure filter only contains a-z, 0-9, spaces, -, ., and !
+        if (!string.IsNullOrEmpty(Name) && !Regex.IsMatch(Name, @"^[a-zA-Z0-9\s\-\.!]*$"))
+        {
+            throw new ArgumentException("Name can only contain letters (a-z), numbers (0-9), spaces, -, ., and !.");
+        }
+        if (EstablishedYear <= 0) throw new ArgumentException("EstablishedYear has to be larger than zero");
+        if (!Enum.IsDefined(typeof(MusicGenre), Genre)) throw new ArgumentException("Genre has to be set to a valid value");
     }
 }
 
@@ -51,5 +60,13 @@ public class AlbumCUdto
         this.Name = model.Name;
 
         this.MusicGroupId = model.MusicGroup.MusicGroupId;
+    }
+    public void EnsureValidity()
+    {
+        // RegEx check to ensure filter only contains a-z, 0-9, spaces, -, ., and !
+        if (!string.IsNullOrEmpty(Name) && !Regex.IsMatch(Name, @"^[a-zA-Z0-9\s\-\.!]*$"))
+        {
+            throw new ArgumentException("Name can only contain letters (a-z), numbers (0-9), spaces, -, ., and !.");
+        }
     }
 }

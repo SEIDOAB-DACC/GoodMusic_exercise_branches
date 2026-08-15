@@ -6,6 +6,8 @@ namespace Services;
 public interface IAdminService
 {
     public Task SeedAsync(int seedCount);
+    public Task<ResponseItemDto<GstUsrInfoAllDto>> RemoveSeedAsync(bool seeded);
+    public Task<ResponseItemDto<GstUsrInfoAllDto>> GuestInfoAsync();
 }
 public interface IMusicGroupsService
 {

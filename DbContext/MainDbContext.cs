@@ -33,9 +33,17 @@ public class MainDbContext : Microsoft.EntityFrameworkCore.DbContext
     { }
     #endregion
 
+    #region model the Views
+    public DbSet<GstUsrInfoDbDto> InfoDbView { get; set; }
+    #endregion
+
     //Here we can modify the migration building
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region model the Views
+        modelBuilder.Entity<GstUsrInfoDbDto>().ToView("vwInfoDb", "gstusr").HasNoKey();
+        #endregion
+
         #region override modelbuilder
         #endregion
         

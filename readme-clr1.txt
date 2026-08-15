@@ -16,7 +16,9 @@ To create the AppWebApi
    connection string corresponding to Tag
    "sql-music.<db_type>.docker.root"
 
-3. Run AppWebApi with or without debugger
+3. Use Azure Data Studio to execute SQL script DbContext/SqlScripts/<db_type>/azure/initDatabase.sql
+
+4. Run AppWebApi with or without debugger
 
    Without debugger:   
    Open a Terminal in folder AppWebApi run: 
@@ -25,7 +27,7 @@ To create the AppWebApi
 
    Verify your can execute endpoint Admin/Environment and Guest/Info
 
-4. Use endpoint Admin/Seed to seed the database, Admin/RemoveSeed to remove the seed
+5. Use endpoint Admin/Seed to seed the database, Admin/RemoveSeed to remove the seed
    Verify database seed with endpoint Guest/Info
 
-5. You can now use and play with all endpoints
+6. You can now use and play with all endpoints

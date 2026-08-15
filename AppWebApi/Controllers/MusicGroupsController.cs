@@ -139,6 +139,7 @@ namespace AppWebApi.Controllers
         {
             try
             {
+                item.EnsureValidity();
                 var idArg = Guid.Parse(id);
                 _logger.LogInformation($"{nameof(UpdateItem)}: {nameof(idArg)}: {idArg}");
                 if (item.MusicGroupId != idArg) throw new ArgumentException("Id mismatch");
@@ -163,6 +164,7 @@ namespace AppWebApi.Controllers
         {
             try
             {
+                item.EnsureValidity();
                _logger.LogInformation($"{nameof(CreateItem)}:");
                 
                 var _item = await _service.CreateMusicGroupAsync(item);

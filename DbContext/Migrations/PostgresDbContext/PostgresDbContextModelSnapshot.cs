@@ -36,6 +36,9 @@ namespace DbContext.Migrations.PostgresDbContext
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("StreetAddress")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
@@ -73,6 +76,9 @@ namespace DbContext.Migrations.PostgresDbContext
                     b.Property<string>("LastName")
                         .HasColumnType("varchar(200)");
 
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("boolean");
+
                     b.HasKey("FriendId");
 
                     b.HasIndex("AddressId");
@@ -103,6 +109,15 @@ namespace DbContext.Migrations.PostgresDbContext
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("strKind")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("strMood")
+                        .HasColumnType("varchar(200)");
+
                     b.HasKey("PetId");
 
                     b.HasIndex("FriendId");
@@ -121,6 +136,9 @@ namespace DbContext.Migrations.PostgresDbContext
 
                     b.Property<string>("QuoteText")
                         .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("boolean");
 
                     b.HasKey("QuoteId");
 
@@ -146,7 +164,8 @@ namespace DbContext.Migrations.PostgresDbContext
                 {
                     b.HasOne("DbModels.AddressDbM", "AddressDbM")
                         .WithMany("FriendsDbM")
-                        .HasForeignKey("AddressId");
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("AddressDbM");
                 });

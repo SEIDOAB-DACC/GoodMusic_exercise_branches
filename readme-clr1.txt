@@ -7,7 +7,7 @@ To create the AppWebApi
    
    Windows
    ./database-rebuild-all.ps1 sql-music sqlserver docker root ../AppWebApi
-   
+
    Ensure no errors from build, migration or database update
 
 
@@ -23,7 +23,9 @@ To create the AppWebApi
    dotnet run -lp https 
    open url: https://localhost:7066/swagger
 
-   Verify your can execute endpoints
-      Admin/Environment, Admin/Version and Admin/Log
+   Verify your can execute endpoint Admin/Environment and Guest/Info
 
-4. Use From Azure Data Studio to explore the created database and it's schema 
+4. Use endpoint Admin/Seed to seed the database, Admin/RemoveSeed to remove the seed
+   Verify database seed with endpoint Guest/Info
+
+5. You can now use and play with all endpoints

@@ -3,16 +3,16 @@ using System;
 using DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DbContext.Migrations.PostgresDbContext
+namespace DbContext.Migrations.mysqlDbContext
 {
-    [DbContext(typeof(MainDbContext.PostgresDbContext))]
-    [Migration("20260731180523_miInitial")]
+    [DbContext(typeof(MainDbContext.MySqlDbContext))]
+    [Migration("20250808124428_miInitial")]
     partial class miInitial
     {
         /// <inheritdoc />
@@ -20,16 +20,16 @@ namespace DbContext.Migrations.PostgresDbContext
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("DbModels.AddressDbM", b =>
                 {
                     b.Property<Guid>("AddressId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -39,12 +39,15 @@ namespace DbContext.Migrations.PostgresDbContext
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("StreetAddress")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
                     b.Property<int>("ZipCode")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("AddressId");
 
@@ -58,13 +61,13 @@ namespace DbContext.Migrations.PostgresDbContext
                 {
                     b.Property<Guid>("FriendId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid?>("AddressId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("Birthday")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .HasColumnType("varchar(200)");
@@ -75,6 +78,9 @@ namespace DbContext.Migrations.PostgresDbContext
 
                     b.Property<string>("LastName")
                         .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("FriendId");
 
@@ -91,19 +97,28 @@ namespace DbContext.Migrations.PostgresDbContext
                 {
                     b.Property<Guid>("PetId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("FriendId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("Kind")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("Mood")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("strKind")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("strMood")
                         .HasColumnType("varchar(200)");
 
                     b.HasKey("PetId");
@@ -117,13 +132,16 @@ namespace DbContext.Migrations.PostgresDbContext
                 {
                     b.Property<Guid>("QuoteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Author")
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("QuoteText")
                         .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("QuoteId");
 
@@ -133,10 +151,10 @@ namespace DbContext.Migrations.PostgresDbContext
             modelBuilder.Entity("FriendDbMQuoteDbM", b =>
                 {
                     b.Property<Guid>("FriendsDbMFriendId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("QuotesDbMQuoteId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
                     b.HasKey("FriendsDbMFriendId", "QuotesDbMQuoteId");
 
@@ -149,7 +167,8 @@ namespace DbContext.Migrations.PostgresDbContext
                 {
                     b.HasOne("DbModels.AddressDbM", "AddressDbM")
                         .WithMany("FriendsDbM")
-                        .HasForeignKey("AddressId");
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("AddressDbM");
                 });

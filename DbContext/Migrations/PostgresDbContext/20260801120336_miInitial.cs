@@ -23,7 +23,8 @@ namespace DbContext.Migrations.PostgresDbContext
                     StreetAddress = table.Column<string>(type: "varchar(200)", nullable: false),
                     ZipCode = table.Column<int>(type: "integer", nullable: false),
                     City = table.Column<string>(type: "varchar(200)", nullable: false),
-                    Country = table.Column<string>(type: "varchar(200)", nullable: false)
+                    Country = table.Column<string>(type: "varchar(200)", nullable: false),
+                    Seeded = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,7 +38,8 @@ namespace DbContext.Migrations.PostgresDbContext
                 {
                     QuoteId = table.Column<Guid>(type: "uuid", nullable: false),
                     QuoteText = table.Column<string>(type: "varchar(200)", nullable: true),
-                    Author = table.Column<string>(type: "varchar(200)", nullable: true)
+                    Author = table.Column<string>(type: "varchar(200)", nullable: true),
+                    Seeded = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,7 +56,8 @@ namespace DbContext.Migrations.PostgresDbContext
                     AddressId = table.Column<Guid>(type: "uuid", nullable: true),
                     LastName = table.Column<string>(type: "varchar(200)", nullable: true),
                     Email = table.Column<string>(type: "varchar(200)", nullable: true),
-                    Birthday = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    Birthday = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Seeded = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,7 +67,8 @@ namespace DbContext.Migrations.PostgresDbContext
                         column: x => x.AddressId,
                         principalSchema: "supusr",
                         principalTable: "Addresses",
-                        principalColumn: "AddressId");
+                        principalColumn: "AddressId",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -102,8 +106,11 @@ namespace DbContext.Migrations.PostgresDbContext
                     PetId = table.Column<Guid>(type: "uuid", nullable: false),
                     FriendId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "varchar(200)", nullable: false),
+                    strKind = table.Column<string>(type: "varchar(200)", nullable: true),
+                    strMood = table.Column<string>(type: "varchar(200)", nullable: true),
                     Kind = table.Column<int>(type: "integer", nullable: false),
-                    Mood = table.Column<int>(type: "integer", nullable: false)
+                    Mood = table.Column<int>(type: "integer", nullable: false),
+                    Seeded = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

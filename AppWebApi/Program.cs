@@ -55,8 +55,14 @@ builder.Services.AddSwaggerGen(c =>
 
 //Inject DbRepos and Services
 builder.Services.AddScoped<AdminDbRepos>();
+builder.Services.AddScoped<MusicGroupsDbRepos>();
+builder.Services.AddScoped<AlbumsDbRepos>();
 
 builder.Services.AddScoped<IAdminService, AdminServiceDb>();
+builder.Services.AddScoped<IMusicGroupsService, MusicGroupsServiceDb>();
+builder.Services.AddScoped<IAlbumsService, AlbumsServiceDb>();
+
+
 
 var app = builder.Build();
 

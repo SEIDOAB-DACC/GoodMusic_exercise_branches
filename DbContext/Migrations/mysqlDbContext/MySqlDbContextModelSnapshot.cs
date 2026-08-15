@@ -17,7 +17,7 @@ namespace DbContext.Migrations.mysqlDbContext
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -35,6 +35,9 @@ namespace DbContext.Migrations.mysqlDbContext
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("StreetAddress")
                         .IsRequired()
@@ -73,6 +76,9 @@ namespace DbContext.Migrations.mysqlDbContext
                     b.Property<string>("LastName")
                         .HasColumnType("varchar(200)");
 
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("FriendId");
 
                     b.HasIndex("AddressId");
@@ -103,6 +109,15 @@ namespace DbContext.Migrations.mysqlDbContext
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("strKind")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("strMood")
+                        .HasColumnType("varchar(200)");
+
                     b.HasKey("PetId");
 
                     b.HasIndex("FriendId");
@@ -121,6 +136,9 @@ namespace DbContext.Migrations.mysqlDbContext
 
                     b.Property<string>("QuoteText")
                         .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("QuoteId");
 
@@ -146,7 +164,8 @@ namespace DbContext.Migrations.mysqlDbContext
                 {
                     b.HasOne("DbModels.AddressDbM", "AddressDbM")
                         .WithMany("FriendsDbM")
-                        .HasForeignKey("AddressId");
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("AddressDbM");
                 });

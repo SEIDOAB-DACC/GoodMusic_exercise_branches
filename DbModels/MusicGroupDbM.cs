@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Seido.Utilities.SeedGenerator;
 using Models;
 using Models.Interfaces;
+using Models.DTO;
 
 namespace DbModels;
 
@@ -22,9 +23,21 @@ public class MusicGroupDbM : MusicGroup, ISeed<MusicGroupDbM>
     #endregion
 
     #region Constructors
-    public MusicGroupDbM() : base() 
+    public MusicGroupDbM()
     {
         MusicGroupId = Guid.NewGuid();
+    }
+    public MusicGroupDbM(MusicGroupCUdto dto):this()
+    {
+        UpdateFromDTO(dto);
+    }
+    #endregion
+
+    #region Update from DTO
+    public MusicGroupDbM UpdateFromDTO(MusicGroupCUdto dto)
+    {
+        Name = dto.Name;
+        return this;
     }
     #endregion
 

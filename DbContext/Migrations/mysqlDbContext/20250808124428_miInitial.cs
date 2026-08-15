@@ -29,7 +29,8 @@ namespace DbContext.Migrations.mysqlDbContext
                     City = table.Column<string>(type: "varchar(200)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Country = table.Column<string>(type: "varchar(200)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Seeded = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,7 +47,8 @@ namespace DbContext.Migrations.mysqlDbContext
                     QuoteText = table.Column<string>(type: "varchar(200)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Author = table.Column<string>(type: "varchar(200)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Seeded = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,7 +69,8 @@ namespace DbContext.Migrations.mysqlDbContext
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "varchar(200)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Birthday = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    Birthday = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Seeded = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -77,7 +80,8 @@ namespace DbContext.Migrations.mysqlDbContext
                         column: x => x.AddressId,
                         principalSchema: "supusr",
                         principalTable: "Addresses",
-                        principalColumn: "AddressId");
+                        principalColumn: "AddressId",
+                        onDelete: ReferentialAction.SetNull);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -118,8 +122,13 @@ namespace DbContext.Migrations.mysqlDbContext
                     FriendId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "varchar(200)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    strKind = table.Column<string>(type: "varchar(200)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    strMood = table.Column<string>(type: "varchar(200)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Kind = table.Column<int>(type: "int", nullable: false),
-                    Mood = table.Column<int>(type: "int", nullable: false)
+                    Mood = table.Column<int>(type: "int", nullable: false),
+                    Seeded = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {

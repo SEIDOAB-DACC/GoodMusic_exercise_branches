@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Seido.Utilities.SeedGenerator;
 using Models;
 using Models.Interfaces;
+using Models.DTO;
 
 namespace DbModels;
 
@@ -26,7 +27,22 @@ public class AlbumDbM : Album, ISeed<AlbumDbM>
     #endregion
 
     #region Constructors
-    public AlbumDbM() {}
+    public AlbumDbM()
+    {
+        AlbumId = Guid.NewGuid();
+    }
+    public AlbumDbM(AlbumCUdto dto):this()
+    {
+        UpdateFromDTO(dto);
+    }
+    #endregion
+
+    #region Update from DTO
+    public AlbumDbM UpdateFromDTO(AlbumCUdto dto)
+    {
+        Name = dto.Name;
+        return this;
+    }
     #endregion
 
     #region randomly seed this instance

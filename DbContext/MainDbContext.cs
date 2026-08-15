@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 
 using Configuration;
+using Models.DTO;
 using DbModels;
 using Microsoft.Extensions.Hosting.Internal;
 using DbContext.Extensions;

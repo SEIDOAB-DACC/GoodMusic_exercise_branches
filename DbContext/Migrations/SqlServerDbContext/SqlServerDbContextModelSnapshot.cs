@@ -22,6 +22,29 @@ namespace DbContext.Migrations.SqlServerDbContext
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DbModels.AlbumDbM", b =>
+                {
+                    b.Property<Guid>("AlbumId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MusicGroupDbMMusicGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("bit");
+
+                    b.HasKey("AlbumId");
+
+                    b.HasIndex("MusicGroupDbMMusicGroupId");
+
+                    b.ToTable("Albums", "supusr");
+                });
+
             modelBuilder.Entity("DbModels.MusicGroupDbM", b =>
                 {
                     b.Property<Guid>("MusicGroupId")
@@ -39,7 +62,23 @@ namespace DbContext.Migrations.SqlServerDbContext
 
                     b.HasKey("MusicGroupId");
 
-                    b.ToTable("MusicGroups");
+                    b.ToTable("MusicGroups", "supusr");
+                });
+
+            modelBuilder.Entity("DbModels.AlbumDbM", b =>
+                {
+                    b.HasOne("DbModels.MusicGroupDbM", "MusicGroupDbM")
+                        .WithMany("AlbumsDbM")
+                        .HasForeignKey("MusicGroupDbMMusicGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MusicGroupDbM");
+                });
+
+            modelBuilder.Entity("DbModels.MusicGroupDbM", b =>
+                {
+                    b.Navigation("AlbumsDbM");
                 });
 #pragma warning restore 612, 618
         }

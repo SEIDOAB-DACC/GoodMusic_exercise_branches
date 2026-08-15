@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DbContext.Migrations.SqlServerDbContext
 {
     [DbContext(typeof(MainDbContext.SqlServerDbContext))]
-    [Migration("20260811120709_miInitial")]
+    [Migration("20260812102632_miInitial")]
     partial class miInitial
     {
         /// <inheritdoc />
@@ -24,6 +24,29 @@ namespace DbContext.Migrations.SqlServerDbContext
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("DbModels.AlbumDbM", b =>
+                {
+                    b.Property<Guid>("AlbumId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MusicGroupDbMMusicGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<bool>("Seeded")
+                        .HasColumnType("bit");
+
+                    b.HasKey("AlbumId");
+
+                    b.HasIndex("MusicGroupDbMMusicGroupId");
+
+                    b.ToTable("Albums", "supusr");
+                });
 
             modelBuilder.Entity("DbModels.MusicGroupDbM", b =>
                 {
@@ -42,7 +65,23 @@ namespace DbContext.Migrations.SqlServerDbContext
 
                     b.HasKey("MusicGroupId");
 
-                    b.ToTable("MusicGroups");
+                    b.ToTable("MusicGroups", "supusr");
+                });
+
+            modelBuilder.Entity("DbModels.AlbumDbM", b =>
+                {
+                    b.HasOne("DbModels.MusicGroupDbM", "MusicGroupDbM")
+                        .WithMany("AlbumsDbM")
+                        .HasForeignKey("MusicGroupDbMMusicGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MusicGroupDbM");
+                });
+
+            modelBuilder.Entity("DbModels.MusicGroupDbM", b =>
+                {
+                    b.Navigation("AlbumsDbM");
                 });
 #pragma warning restore 612, 618
         }

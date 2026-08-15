@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Configuration;
 using DbModels;
 using Microsoft.Extensions.Hosting.Internal;
+using DbContext.Extensions;
 
 namespace DbContext;
 
@@ -12,8 +13,17 @@ namespace DbContext;
 //used for all Database connection as well as for EFC CodeFirst migration and database updates 
 public class MainDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
+#if DEBUG
+    // remove password from connection string in debug mode
+    // this is useful for debugging and logging purposes, but should not be used in production code
+    public string dbConnection => System.Text.RegularExpressions.Regex.Replace(
+        this.Database.GetConnectionString() ?? "", @"(pwd|password)=[^;]*;?", "",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+#endif
+
     #region C# model of database tables
     public DbSet<MusicGroupDbM> MusicGroups { get; set; }
+    public DbSet<AlbumDbM> Albums { get; set; }
     #endregion
 
     #region constructors
@@ -31,21 +41,6 @@ public class MainDbContext : Microsoft.EntityFrameworkCore.DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    //used by the child DbContexts to retrieve the connection string
-    protected string GetConnectionString(string connectionStringName)
-    {
-        // Design time: manually create configuration to read appsettings.json
-        var configBuilder = new ConfigurationBuilder()
-            .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-        var config = configBuilder.Build();
-        var connectionString = config.GetConnectionString(connectionStringName);
-        System.Console.WriteLine($"Design time Connection String from appsettings.json: {connectionString}");
-
-        return connectionString;
-    }
-
     #region DbContext for some popular databases
     public class SqlServerDbContext : MainDbContext
     {
@@ -59,8 +54,8 @@ public class MainDbContext : Microsoft.EntityFrameworkCore.DbContext
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var connectionString = GetConnectionString("SqlServerDocker");
-                optionsBuilder.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
+                optionsBuilder = optionsBuilder.ConfigureForDesignTime(
+                    (options, connectionString) => options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure()));
             }
 
             base.OnConfiguring(optionsBuilder);
@@ -92,9 +87,10 @@ public class MainDbContext : Microsoft.EntityFrameworkCore.DbContext
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var connectionString = GetConnectionString("MySqlDocker");
-                optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-                    b => b.SchemaBehavior(Microting.EntityFrameworkCore.MySql.Infrastructure.MySqlSchemaBehavior.Translate, (schema, table) => $"{schema}_{table}"));
+                optionsBuilder = optionsBuilder.ConfigureForDesignTime(
+                    (options, connectionString) =>
+                        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                            b => b.SchemaBehavior(Microting.EntityFrameworkCore.MySql.Infrastructure.MySqlSchemaBehavior.Translate, (schema, table) => $"{schema}_{table}")));
             }
 
             base.OnConfiguring(optionsBuilder);
@@ -120,10 +116,8 @@ public class MainDbContext : Microsoft.EntityFrameworkCore.DbContext
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var connectionString = GetConnectionString("PostgreSqlDocker");
-                System.Console.WriteLine($"Connection String: {connectionString}");
-                
-                optionsBuilder.UseNpgsql(connectionString);
+                optionsBuilder = optionsBuilder.ConfigureForDesignTime(
+                    (options, connectionString) => options.UseNpgsql(connectionString));
             }
 
             base.OnConfiguring(optionsBuilder);

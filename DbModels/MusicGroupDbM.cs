@@ -6,15 +6,21 @@ using Seido.Utilities.SeedGenerator;
 using Models;
 using Models.Interfaces;
 
-
 namespace DbModels;
 
+[Table("MusicGroups", Schema = "supusr")]
 public class MusicGroupDbM : MusicGroup, ISeed<MusicGroupDbM>
 {
     [Key]       
     public override Guid MusicGroupId { get; set; }
 
-    
+    #region implementing entity Navigation properties when model is using interfaces in the relationships between models
+    [NotMapped]
+    public override List<IAlbum> Albums { get => AlbumsDbM?.ToList<IAlbum>(); set => new NotImplementedException(); }
+    [JsonIgnore]
+    public virtual List<AlbumDbM> AlbumsDbM { get; set; } = null;
+    #endregion
+
     #region Constructors
     public MusicGroupDbM() : base() 
     {

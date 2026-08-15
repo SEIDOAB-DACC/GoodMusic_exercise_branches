@@ -9,6 +9,9 @@ public class MusicGroup : IMusicGroup, ISeed<MusicGroup>
     public virtual string Name { get; set; }
     public virtual MusicGenre Genre { get; set; }
 
+    //Model relationships
+    public virtual List<IAlbum> Albums { get; set; } = new List<IAlbum>();
+
  
     #region Constructors
     public MusicGroup(){}

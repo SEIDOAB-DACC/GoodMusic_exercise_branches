@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using Configuration;
+﻿using Configuration;
+using Configuration.Extensions;
 using Configuration.Options;
-using DbContext;
+using DbContext.Extensions;
 using DbRepos;
+
 using Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,50 +23,13 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 
-#region Initializing the standard sw stack
-//using user secrets
-//You dont need to use the assembly (reflection) to access user secrets at runtime
-//But you need to use the assembly (reflection) to access user secrets at design time (efc migrations)
-//In later branches this code is refactored into a configuration extension that is used both at design time and runtime
-//to switch between user secrets (development) and azure key vault (production)
-var currentDir = Directory.GetCurrentDirectory();
-var assembly = System.Reflection.Assembly.Load("Configuration");
-builder.Configuration.SetBasePath(Path.Combine(currentDir, "../AppWebApi"))
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        .AddUserSecrets(assembly);
-
-// adding options patterns to read appsettings and user secrets
-builder.Services.Configure<AesEncryptionOptions>(
-    options => builder.Configuration.GetSection(AesEncryptionOptions.Position).Bind(options));
-
-// Registering encryption service
-builder.Services.AddTransient<Encryptions>();
-
-builder.Services.Configure<JwtOptions>(
-    options => builder.Configuration.GetSection(JwtOptions.Position).Bind(options));
-
-// adding options and service for multiple Database connections and their respective DbContexts
-builder.Services.Configure<DbConnectionSetsOptions>(
-    options => builder.Configuration.GetSection(DbConnectionSetsOptions.Position).Bind(options));
-
-// Registering database connections service
-builder.Services.AddSingleton<DatabaseConnections>();
-
-// adding version info
-builder.Services.Configure<VersionOptions>(options =>VersionOptions.ReadFromAssembly(options));
-
-//Inject Custom logger, this will also register the InMemoryLoggerProvider logger
-//hence, AddLogging should not be used here
-builder.Services.AddSingleton<ILoggerProvider, InMemoryLoggerProvider>();
-
-// adding DbContexts
-builder.Services.AddDbContext<MainDbContext>(options =>
-{
-    // SQLSERVER
-    //var connectionString = builder.Configuration["ConnectionStrings:SqlServerDocker"];  //alternative to below
-    var connectionString = builder.Configuration.GetConnectionString("SqlServerDocker");
-    options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
-});
+#region Initializing the standard sw stack using extensions
+builder.Configuration.AddSecrets(builder.Environment);
+builder.Services.AddEncryptions(builder.Configuration);
+builder.Services.AddDatabaseConnections(builder.Configuration);
+builder.Services.AddVersionInfo();
+builder.Services.AddInMemoryLogger();
+builder.Services.AddUserBasedDbContext();
 #endregion
 
 builder.Services.Configure<MySecretOptions>(

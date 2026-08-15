@@ -27,7 +27,3 @@ To create the AppWebApi
       Admin/Environment, Admin/Version and Admin/Log
 
 4. Use From Azure Data Studio to explore the created database and it's schema 
-   Notice that one table is implemented in the database
-
-5. Use endpoint Admin/Seed to fill the database Quote table with content.
-   Check the content using Azure Data Studio

@@ -28,26 +28,6 @@ namespace AppWebApi.Controllers
         readonly DatabaseConnections _dbConnections = null;
         readonly IAdminService _service;
 
-
-        //GET: api/admin/connectionstring
-        [HttpGet()]
-        [ActionName("ConnectionString")]
-        [ProducesResponseType(200, Type = typeof(string))]
-        public IActionResult ConnectionString()
-        {
-            try
-            {
-                var connectionString = _configuration.GetConnectionString("SqlServerDocker");
-
-                _logger.LogInformation($"{nameof(ConnectionString)}:\n{JsonConvert.SerializeObject(connectionString)}");
-                return Ok(connectionString);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(ConnectionString)}: {ex.Message}");
-                return BadRequest(ex.Message);
-            }
-        }
         
         //GET: api/admin/environment
         [HttpGet()]
@@ -203,7 +183,6 @@ namespace AppWebApi.Controllers
             _dbConnections = dbConnections;
 
             _service = service;
-
         }
     }
 }

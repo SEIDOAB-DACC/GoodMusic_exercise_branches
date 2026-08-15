@@ -24,6 +24,10 @@ public class AdminDbRepos
 
         //Seeding new music groups into the database
         var musicGroups = seeder.ItemsToList<MusicGroupDbM>(seedCount);
+
+        //Set between 5 and 50 albums for each music groups
+        musicGroups.ForEach(mg => mg.AlbumsDbM = seeder.ItemsToList<AlbumDbM>(seeder.Next(2, 5)));
+
         _dbContext.MusicGroups.AddRange(musicGroups);
 
         //Save changes to the database

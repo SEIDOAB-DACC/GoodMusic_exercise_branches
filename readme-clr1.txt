@@ -5,6 +5,6 @@ To create the AppWebApi
    Without debugger:   
    Open a Terminal in folder AppWebApi run: 
    dotnet run -lp https 
-   open url: https://localhost:7066/weatherforecast
+   open url: https://localhost:7066/swagger
 
-2. You will see the result from the endpoit weatherforecast
+2. You will see the result from the endpoint version

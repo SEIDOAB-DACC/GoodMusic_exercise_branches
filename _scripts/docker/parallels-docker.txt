@@ -1,0 +1,80 @@
+Guide to connect from a Paralells Windows VM to docker containers running on macOS host.
+This is used to connect to azure-cli and database servers running in docker
+-----
+
+
+macOS side
+----
+Ensure macOS has enabled remote login
+System settings -> Sharing -> Enable Remote Login
+
+Confirm remote login in terminal
+    sudo systemsetup -getremotelogin
+
+Ensure port 22 is open, in terminal
+    sudo lsof -i :22
+
+If not you need to open firewall for sshd.
+System Setting -> Network -> Firewall -> Alternatives
+Allow incomming connections for
+    sshd-keygen-wrapper
+    sshd-session
+
+
+In Paralells Windows VM set Network
+    Bridged Network 
+    Default Adapter
+
+Check Windows WM Ip address, in terminal
+    ipconfig getifaddr en0
+    ifconfig | grep 'inet ' | grep -v 127.0.0.1 | grep -v '10\.211\.' | awk '{print $2}'
+
+
+In Docker start azure-cli container, in terminal
+    docker run -d --name azure-cli -p 2222:22 -p 8080:8080 mcr.microsoft.com/azure-cli:latest sleep infinity
+Ensure the container is running
+    docker ps | grep azure-cli
+
+
+Windows WM side
+----
+
+Ensure you can reach macOS, in terminal
+    ping 192.168.68.51
+
+Login to macOS remote using ssh
+    ssh martin@192.168.68.51
+
+To avoid giving password each time, connect with a ssh key, 
+Generate a key, in terminal (The command is waiting for your password)
+    ssh-keygen -t rsa -b 4096 -f $env:USERPROFILE\.ssh\id_rsa
+    
+Copy the public key to your macOS host
+    type $env:USERPROFILE\.ssh\id_rsa.pub | ssh martin@192.168.68.51 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+
+Verify ssh key based connection by executin a command, in terminal
+    ssh martin@192.168.68.51 "echo 'SSH key authentication test'"
+
+See the docker processes running
+    ssh martin@192.168.68.51 "/usr/local/bin/docker ps"
+
+
+Execute a azure cli command
+-----
+azure version
+    ssh martin@192.168.68.51 "/usr/local/bin/docker exec azure-cli az --version"
+
+azure login
+    ssh martin@192.168.68.51 "/usr/local/bin/docker exec azure-cli az login"
+
+azure List subscriptions
+    ssh martin@192.168.68.51 "/usr/local/bin/docker exec azure-cli az account list"
+
+azure List resource groups
+    ssh martin@192.168.68.51 "/usr/local/bin/docker exec azure-cli az group list"
+
+
+Connect to Database containers
+-----
+To connect to docker containers running databases, use the IP address of the host machine. 
+In above with Parallels (bridged network) instead of "localhost" use "192.168.68.51"

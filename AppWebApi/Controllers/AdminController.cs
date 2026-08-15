@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 
+using Services;
 using Configuration;
 using Configuration.Options;
 
@@ -25,7 +26,29 @@ namespace AppWebApi.Controllers
         readonly MySecretOptions _myMessageOptions;
         readonly Encryptions _encryptions = null;
         readonly DatabaseConnections _dbConnections = null;
+        readonly IAdminService _service;
 
+
+        //GET: api/admin/connectionstring
+        [HttpGet()]
+        [ActionName("ConnectionString")]
+        [ProducesResponseType(200, Type = typeof(string))]
+        public IActionResult ConnectionString()
+        {
+            try
+            {
+                var connectionString = _configuration.GetConnectionString("SqlServerDocker");
+
+                _logger.LogInformation($"{nameof(ConnectionString)}:\n{JsonConvert.SerializeObject(connectionString)}");
+                return Ok(connectionString);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(ConnectionString)}: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+        
         //GET: api/admin/environment
         [HttpGet()]
         [ActionName("Environment")]
@@ -45,7 +68,7 @@ namespace AppWebApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        
         //GET: api/admin/version
         [HttpGet()]
         [ActionName("Version")]
@@ -122,6 +145,41 @@ namespace AppWebApi.Controllers
             }
         }
 
+        //GET: api/admin/seed?count={count}
+        [HttpGet()]
+        [ActionName("Seed")]
+        [ProducesResponseType(200, Type = typeof(string))]
+        [ProducesResponseType(400, Type = typeof(string))]
+        public async Task<IActionResult> Seed(int seedCount)
+        {
+            try
+            {
+                _logger.LogInformation($"{nameof(Seed)}");
+                await _service.SeedAsync(seedCount);
+
+                return Ok($"Seeding {seedCount} items completed successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(Seed)}: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //GET: api/admin/log
+        [HttpGet()]
+        [ActionName("Log")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<LogMessage>))]
+        public async Task<IActionResult> Log([FromServices] ILoggerProvider _loggerProvider)
+        {
+            //Note the way to get the LoggerProvider, not the logger from Services via DI
+            if (_loggerProvider is InMemoryLoggerProvider cl)
+            {
+                return Ok(await cl.MessagesAsync);
+            }
+            return Ok("No messages in log");
+        }
+
         public AdminController(ILogger<AdminController> logger,
                     IConfiguration configuration,
                     IOptions<DbConnectionSetsOptions> dbSetOptions,
@@ -129,7 +187,8 @@ namespace AppWebApi.Controllers
                     IOptions<JwtOptions> jwtOptions,
                     IOptions<VersionOptions> versionOptions,
                     IOptions<MySecretOptions> myMessageOptions,
-                    Encryptions encryptions, DatabaseConnections dbConnections)
+                    Encryptions encryptions, DatabaseConnections dbConnections,
+                    IAdminService service)
         {
             _logger = logger;
 
@@ -142,7 +201,9 @@ namespace AppWebApi.Controllers
 
             _encryptions = encryptions;
             _dbConnections = dbConnections;
+
+            _service = service;
+
         }
     }
 }
-

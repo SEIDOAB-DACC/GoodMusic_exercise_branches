@@ -1,0 +1,56 @@
+﻿In Visual Studio Code  open a terminal in DbContext project.
+
+Visual Studio Code Database migrations.
+--------------------------------
+In the terminal, type below commands. After each migration you will get a success confirmation from EFC.
+Use command depending on your database.
+
+SQLServer:
+dotnet ef migrations add initial_migration --context SqlServerDbContext --output-dir Migrations/SqlServerDbContext
+
+MariaDb:
+dotnet ef migrations add initial_migration --context MySqlDbContext --output-dir Migrations/MySqlMigrations
+
+Postgres:
+dotnet ef migrations add initial_migration --context PostgresDbContext --output-dir Migrations/PostgresMigrations
+
+
+Visual Studio Code Commit the migrations to the Database (create or update the databases).
+----------------------------------------------------------------------------
+In the terminal, type below commands. After each committment you will get a success confirmation
+SQLServer:
+dotnet ef database update --context SqlServerDbContext
+
+MariaDb:
+dotnet ef database update --context MySqlDbContext
+
+Postgres:
+dotnet ef database update --context PostgresDbContext
+
+
+Visual Studio Code to drop the Database.
+----------------------------------------------------------------------------
+In the terminal, type below commands. After each committment you will get a success confirmation
+SQLServer:
+dotnet ef database drop -f --context SqlServerDbContext
+
+MariaDb:
+dotnet ef database drop -f --context MySqlDbContext
+
+Postgres:
+dotnet ef database drop -f --context PostgresDbContext
+
+
+
+Visual Studio Code to remove latest migration, e.g. empty migration, that is NOT updated to Database
+----------------------------------------------------------------------------
+
+dotnet ef migrations remove --context SqlServerDbContext
+
+
+Visual Studio Code revert Database to a specific migration
+-------------------------------------------------
+dotnet ef database update <target_migration> --context SqlServerDbContext
+
+example:
+dotnet ef database update fk_migration6 --context SqlServerDbContext

@@ -1,5 +1,10 @@
-﻿using Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+
+using Configuration;
 using Configuration.Options;
+using DbContext;
+using DbRepos;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,14 +54,23 @@ builder.Services.AddSingleton<DatabaseConnections>();
 
 // adding version info
 builder.Services.Configure<VersionOptions>(options =>VersionOptions.ReadFromAssembly(options));
-#endregion
 
+//Inject Custom logger, this will also register the InMemoryLoggerProvider logger
+//hence, AddLogging should not be used here
+builder.Services.AddSingleton<ILoggerProvider, InMemoryLoggerProvider>();
+
+// adding DbContexts
+builder.Services.AddDbContext<MainDbContext>(options =>
+{
+    // SQLSERVER
+    //var connectionString = builder.Configuration["ConnectionStrings:SqlServerDocker"];  //alternative to below
+    var connectionString = builder.Configuration.GetConnectionString("SqlServerDocker");
+    options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
+});
+#endregion
 
 builder.Services.Configure<MySecretOptions>(
     options => builder.Configuration.GetSection(MySecretOptions.Position).Bind(options));
-
-//builder.Services.AddTransient<IMusicGenreService, Classics>();
-builder.Services.AddTransient<IMusicGenreService, Modern>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen(c =>
@@ -76,6 +90,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+//Inject DbRepos and Services
+builder.Services.AddScoped<AdminDbRepos>();
+
+builder.Services.AddScoped<IAdminService, AdminServiceDb>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -85,7 +104,7 @@ var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seido Music simple API v2.0");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seido Friends API v2.0");
     });
 }
 

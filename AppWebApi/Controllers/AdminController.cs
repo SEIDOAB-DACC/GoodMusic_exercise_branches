@@ -23,8 +23,29 @@ namespace AppWebApi.Controllers
         readonly VersionOptions _versionOptions;
         readonly IConfiguration _configuration;
         readonly MySecretOptions _myMessageOptions;
+        readonly Encryptions _encryptions = null;
+        readonly DatabaseConnections _dbConnections = null;
 
-        
+        //GET: api/admin/environment
+        [HttpGet()]
+        [ActionName("Environment")]
+        [ProducesResponseType(200, Type = typeof(DatabaseConnections.SetupInformation))]
+        public IActionResult Environment()
+        {
+            try
+            {
+                var info = _dbConnections.SetupInfo;
+
+                _logger.LogInformation($"{nameof(Environment)}:\n{JsonConvert.SerializeObject(info)}");
+                return Ok(info);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(Environment)}: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
         //GET: api/admin/version
         [HttpGet()]
         [ActionName("Version")]
@@ -58,13 +79,57 @@ namespace AppWebApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //GET: api/admin/EncryptedMySecret
+        [HttpGet()]
+        [ActionName("EncryptedMySecret")]
+        [ProducesResponseType(200, Type = typeof(string))]
+        [ProducesResponseType(400, Type = typeof(string))]
+        public IActionResult EncryptedMySecret()
+        {
+            try
+            {
+                _logger.LogInformation($"{nameof(EncryptedMySecret)}");
+
+                var encrypted = _encryptions.AesEncryptToBase64<MySecretOptions>(_myMessageOptions);
+                return Ok(encrypted);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(EncryptedMySecret)}: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //GET: api/admin/decryptedMySecret
+        [HttpGet()]
+        [ActionName("DecryptedMySecret")]
+        [ProducesResponseType(200, Type = typeof(MySecretOptions))]
+        [ProducesResponseType(400, Type = typeof(string))]
+        public IActionResult DecryptedMySecret(string encryptedMySecret)
+        {
+            try
+            {
+                _logger.LogInformation($"{nameof(DecryptedMySecret)}");
+                var decrypted = _encryptions.AesDecryptFromBase64<MySecretOptions>(encryptedMySecret);
+
+                return Ok(decrypted);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(DecryptedMySecret)}: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
         public AdminController(ILogger<AdminController> logger,
                     IConfiguration configuration,
                     IOptions<DbConnectionSetsOptions> dbSetOptions,
                     IOptions<AesEncryptionOptions> aesOptions,
                     IOptions<JwtOptions> jwtOptions,
                     IOptions<VersionOptions> versionOptions,
-                    IOptions<MySecretOptions> myMessageOptions)
+                    IOptions<MySecretOptions> myMessageOptions,
+                    Encryptions encryptions, DatabaseConnections dbConnections)
         {
             _logger = logger;
 
@@ -74,6 +139,9 @@ namespace AppWebApi.Controllers
             _versionOptions = versionOptions.Value;
             _configuration = configuration;
             _myMessageOptions = myMessageOptions.Value;
+
+            _encryptions = encryptions;
+            _dbConnections = dbConnections;
         }
     }
 }

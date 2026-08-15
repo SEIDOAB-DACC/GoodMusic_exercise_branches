@@ -7,4 +7,4 @@ To create the AppWebApi
    dotnet run -lp https 
    open url: https://localhost:7066/swagger
 
-2. You will see the result from the endpoint version
+2. You can now use and play with all endpoints
